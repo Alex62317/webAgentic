@@ -1,0 +1,330 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{% trans 'AI 服务助手' %}</title>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <style>
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .auth-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .auth-form h2 {
+            margin-bottom: 20px;
+            color: #4a90e2;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .form-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #357abd;
+        }
+        
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d0d0d0;
+        }
+        
+        .auth-toggle {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .auth-toggle a {
+            color: #4a90e2;
+            text-decoration: none;
+        }
+        
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info span {
+            font-weight: bold;
+        }
+        
+        .user-info button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+        }
+        
+        .login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* 语言切换样式 */
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .language-switcher button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .language-switcher button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .language-switcher button.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 认证模态框 -->
+    <div id="authModal" class="auth-modal" style="display: none;">
+        <div class="auth-form">
+            <h2 id="authTitle">{% trans '用户登录' %}</h2>
+            <div class="form-group">
+                <label for="username">{% trans '用户名' %}</label>
+                <input type="text" id="username" placeholder="{% trans '请输入用户名' %}">
+            </div>
+            <div class="form-group">
+                <label for="password">{% trans '密码' %}</label>
+                <input type="password" id="password" placeholder="{% trans '请输入密码' %}">
+            </div>
+            <div class="form-group" id="emailGroup" style="display: none;">
+                <label for="email">{% trans '邮箱' %}</label>
+                <input type="email" id="email" placeholder="{% trans '请输入邮箱' %}">
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeAuthModal()">{% trans '取消' %}</button>
+                <button type="button" class="btn-primary" id="authSubmit" onclick="submitAuth()">{% trans '登录' %}</button>
+            </div>
+            <div class="auth-toggle">
+                <span id="authToggleText">{% trans '还没有账号？' %}</span>
+                <a href="#" id="authToggleLink" onclick="toggleAuthMode()">{% trans '立即注册' %}</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 语言切换 -->
+    <div class="language-switcher">
+        <form id="languageForm" action="{% url 'set_language' %}" method="post" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="language" id="languageInput">
+        </form>
+        <button class="language-btn {% if LANGUAGE_CODE == 'en' %}active{% endif %}" onclick="switchLanguage('en')">EN</button>
+        <button class="language-btn {% if LANGUAGE_CODE == 'zh-hans' %}active{% endif %}" onclick="switchLanguage('zh-hans')">中文</button>
+    </div>
+
+    <!-- 登录按钮（未登录状态） -->
+    <button class="login-btn" id="loginBtn" onclick="showAuthModal()" style="display: block;">{% trans '登录 / 注册' %}</button>
+
+    <!-- 用户信息（已登录状态） -->
+    <div class="user-info" id="userInfo" style="display: none;">
+        <span id="userName"></span>
+        <button onclick="logout()">{% trans '退出登录' %}</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 {% trans 'AI 聊天助手' %}</h1>
+            <p>{% trans '智能AI对话，为您提供专业的服务' %}</p>
+        </div>
+
+        <div class="main-content">
+            <div class="chat-area">
+                <div class="messages" id="messages">
+                    <div class="message assistant">
+                        <div>
+                            <div class="message-role">Assistant</div>
+                            <div class="message-content">
+                                👋 {% trans '你好！我是你的AI助手，有什么可以帮助你的吗？' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading" style="display: none;">
+                    <div>🤔 {% trans 'AI 正在思考...' %}</div>
+                </div>
+
+                <div class="input-area">
+                    <select id="modelSelect" style="margin-right: 10px;">
+                        <option value="qwen3.5:0.8b">Qwen3.5 (0.8B)</option>
+                        <option value="qwen3.5:9b">Qwen3.5 (9B)</option>
+                    </select>
+                    <input id="messageInput" placeholder="{% trans '输入您的问题...' %}" type="text"/>
+                    <button id="sendBtn" onclick="sendMessage()">{% trans '发送' %}</button>
+                    <button class="clear-btn" id="clearBtn" onclick="clearHistory()">{% trans '清空' %}</button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h3>🚀 {% trans '快捷操作' %}</h3>
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="quickAction('你好，介绍一下自己')">
+                        👋 {% trans '你好，介绍一下自己' %}
+                    </div>
+                    <div class="quick-action" onclick="quickAction('什么是人工智能？')">
+                        🤖 {% trans '什么是人工智能？' %}
+                    </div>
+                    <div class="quick-action" onclick="quickAction('如何学习编程？')">
+                        💻 {% trans '如何学习编程？' %}
+                    </div>
+                    <div class="quick-action" onclick="quickAction('今天天气怎么样？')">
+                        ☁️ {% trans '今天天气怎么样？' %}
+                    </div>
+                </div>
+
+                <h3>📚 {% trans '会话历史' %}</h3>
+                <div class="session-list" id="sessionList">
+                    <!-- 会话历史将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript文件引用 -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // 语言切换函数
+        function switchLanguage(language) {
+            document.getElementById('languageInput').value = language;
+            document.getElementById('languageForm').submit();
+        }
+        
+        // 页面加载时检查语言设置
+        window.onload = function() {
+            // 先执行原有的页面加载逻辑
+            if (typeof originalOnLoad === 'function') {
+                originalOnLoad();
+            }
+            
+            // 然后检查语言设置
+            const language = getCookie('django_language');
+            if (language) {
+                // 更新语言按钮状态
+                document.querySelectorAll('.language-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.language-btn[onclick="switchLanguage('${language}')"]`).classList.add('active');
+            }
+        };
+        
+        // 保存原有的onload函数
+        var originalOnLoad = window.onload;
+        
+        // Cookie操作函数（如果main.js中没有）
+        function getCookie(name) {
+            const cookieName = `${name}=`;
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookieArray = decodedCookie.split(';');
+            for (let i = 0; i < cookieArray.length; i++) {
+                let cookie = cookieArray[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(cookieName) === 0) {
+                    return cookie.substring(cookieName.length, cookie.length);
+                }
+            }
+            return '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+# Chinese translations for Django project.
+# Copyright (C) 2026 THE Django PROJECT'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Django project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Django 4.2.29\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-13 08:30+0000\n"
+"PO-Revision-Date: 2026-03-13 08:30+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh-hans@li.org>\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "AI 服务助手"
+msgstr "AI 服务助手"
+
+msgid "用户登录"
+msgstr "用户登录"
+
+msgid "用户名"
+msgstr "用户名"
+
+msgid "请输入用户名"
+msgstr "请输入用户名"
+
+msgid "密码"
+msgstr "密码"
+
+msgid "请输入密码"
+msgstr "请输入密码"
+
+msgid "邮箱"
+msgstr "邮箱"
+
+msgid "请输入邮箱"
+msgstr "请输入邮箱"
+
+msgid "取消"
+msgstr "取消"
+
+msgid "登录"
+msgstr "登录"
+
+msgid "还没有账号？"
+msgstr "还没有账号？"
+
+msgid "立即注册"
+msgstr "立即注册"
+
+msgid "登录 / 注册"
+msgstr "登录 / 注册"
+
+msgid "退出登录"
+msgstr "退出登录"
+
+msgid "AI 聊天助手"
+msgstr "AI 聊天助手"
+
+msgid "智能AI对话，为您提供专业的服务"
+msgstr "智能AI对话，为您提供专业的服务"
+
+msgid "你好！我是你的AI助手，有什么可以帮助你的吗？"
+msgstr "你好！我是你的AI助手，有什么可以帮助你的吗？"
+
+msgid "AI 正在思考..."
+msgstr "AI 正在思考..."
+
+msgid "输入您的问题..."
+msgstr "输入您的问题..."
+
+msgid "发送"
+msgstr "发送"
+
+msgid "清空"
+msgstr "清空"
+
+msgid "快捷操作"
+msgstr "快捷操作"
+
+msgid "你好，介绍一下自己"
+msgstr "你好，介绍一下自己"
+
+msgid "什么是人工智能？"
+msgstr "什么是人工智能？"
+
+msgid "如何学习编程？"
+msgstr "如何学习编程？"
+
+msgid "今天天气怎么样？"
+msgstr "今天天气怎么样？"
+
+msgid "会话历史"
+msgstr "会话历史"
